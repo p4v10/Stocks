@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import altair as alt
 import yfinance as yf
 import base64
 
@@ -30,6 +31,8 @@ sp_df = load_sp_data()
 #grouping data by sector
 sector = sp_df.groupby('GICS Sector')
 
+st.sidebar.header('Chose Something')
+
 #sidebar
 sort_sector_unq = sorted(sp_df['GICS Sector'].unique())
 select_sector = st.sidebar.multiselect('Sector', sort_sector_unq, default='Energy')
@@ -38,7 +41,7 @@ select_sector = st.sidebar.multiselect('Sector', sort_sector_unq, default='Energ
 df_select_sector = sp_df[(sp_df['GICS Sector'].isin(select_sector))]
 
 
-select_sector2 = st.sidebar.multiselect('Symbol', df_select_sector)
+#select_sector2 = st.sidebar.multiselect('Symbol', df_select_sector)
 
 
 
@@ -69,6 +72,7 @@ data = yf.download(
         proxy = None
     )
 
+
 #Plotting charts
 def price_plot(symbol):
     sp_df = pd.DataFrame(data[symbol].Close)
@@ -84,13 +88,12 @@ def price_plot(symbol):
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
+#Number of charts(client pick)
+comp_n = st.sidebar.slider('Number of Companies', 1, 15)
+
 
 
 if st.button('Show Plots'):
     st.header('Stock Closing Price')
     for i in list(df_select_sector.Symbol)[:comp_n]:
         price_plot(i)
-
-
-
-st.sidebar.header('Chose Something')
